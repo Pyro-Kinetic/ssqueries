@@ -1,0 +1,26 @@
+{
+  "name": "solar_system_queries",
+  "version": "1.0.0",
+  "description": "a dataset of questions and answers about  our solar system's celestial bodies",
+  "homepage": "https://github.com/Pyro-Kinetic/ssqueries#readme",
+  "bugs": {
+    "url": "https://github.com/Pyro-Kinetic/ssqueries/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pyro-Kinetic/ssqueries.git"
+  },
+  "license": "ISC",
+  "author": "Christensen Cadeau",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mysql2": "^3.15.2"
+  }
+}
