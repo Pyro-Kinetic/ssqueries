@@ -7,7 +7,7 @@ export async function getUsers(req, res) {
         const connection = await getDBConnection()
 
         const result = await connection.execute(`SELECT *
-                                                           FROM users`);
+                                                 FROM users`);
         const users = result[0].map(row => row)
         res.json(users)
 

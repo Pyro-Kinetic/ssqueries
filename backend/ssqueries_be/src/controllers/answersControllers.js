@@ -1,9 +1,10 @@
 import {getDBConnection} from "../db/connect.js";
 
-export async function getAnswers(req, res){
+export async function getAnswers(req, res) {
     try {
         const connection = await getDBConnection()
-        const result = await connection.execute(`SELECT * FROM answers`)
+        const result = await connection.execute(`SELECT *
+                                                 FROM answers`)
         const answers = result[0].map(row => row)
         res.json(answers)
 
@@ -11,7 +12,7 @@ export async function getAnswers(req, res){
         console.log('Fields: ', result[1])
         connection.end()
 
-    } catch(error){
+    } catch (error) {
         return res.status(500).json({
             error: 'Failed to fetch answers',
             details: error.message

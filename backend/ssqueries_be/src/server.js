@@ -2,10 +2,10 @@ import 'dotenv/config'
 import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
-import { authRouter } from "./routes/auth.js";
-import { usersRouter } from "./routes/users.js";
-import { answersRouter } from "./routes/answers.js";
-import { questionsRouter } from "./routes/questions.js";
+import {authRouter} from "./routes/auth.js";
+import {usersRouter} from "./routes/users.js";
+import {answersRouter} from "./routes/answers.js";
+import {questionsRouter} from "./routes/questions.js";
 
 const app = express()
 const PORT = process.env.PORT
@@ -36,8 +36,9 @@ app.use('/api/questions', questionsRouter)
 // /ssqueries/answers
 app.use('/api/answers', answersRouter)
 
-//api/register/user
-app.use('/api/register', authRouter)
+//api/auth
+app.use('/api/auth', authRouter)
+
 
 // test
 app.get('/', (req, res) => {

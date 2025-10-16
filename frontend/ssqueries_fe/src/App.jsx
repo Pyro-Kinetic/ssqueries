@@ -7,15 +7,28 @@ function App() {
         password: 'Delta1'
     })
 
-    const [count, setCount] = useState(0)
+    const [logData, setLogData] = useState({
+        username: 'Delta',
+        password: 'Delta1'
+    })
 
-    function handleClick() {
-        setCount(count + 1)
+    const [postUserCount, setPostUserCount] = useState(0)
+    const [logInCount, setLogInCount] = useState(0)
+
+    const logUser = async () => {
+        try {
+            const response = await axios.post('http://localhost:8000/api/auth/login/user', logData)
+            if (response) {
+                console.log('Success, user is logged in: ', response.data)
+            }
+        } catch (error) {
+            console.log('Error logging in user: ', error)
+        }
     }
 
     const postUser = async () => {
         try {
-            const response = await axios.post('http://localhost:8000/api/register/user', data);
+            const response = await axios.post('http://localhost:8000/api/auth/register/user', data);
             if (response) {
                 console.log('Response from server:', response.data);
             }
@@ -26,10 +39,23 @@ function App() {
 
     useEffect(() => {
         postUser()
-    }, [count])
+    }, [postUserCount])
+
+    useEffect(() => {
+        logUser()
+    }, [logInCount])
 
     return (
-        <div onClick={handleClick}>Working</div>
+        <>
+            <div onClick={() => {
+                setPostUserCount(postUserCount + 1)
+            }}>post user
+            </div>
+            <div onClick={() => {
+                setLogInCount(logInCount + 1)
+            }}>log user
+            </div>
+        </>
     )
 }
 

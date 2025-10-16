@@ -54,10 +54,10 @@ export async function registerUser(req, res) {
         const result = await connection.query(insertUserQuery, insertUserQueryValues)
 
         // Create express-session for new user
-        req.session.userID = result[0].insertId
+        req.session.userId = result[0].insertId
 
         res.status(201).json({message: 'User registered'})
-        console.log('User added: ', result[0].insertId, req.body)
+        console.log('User added: ', result[0].insertId, req.body, 'Session: ', req.session)
         connection.end()
 
     } catch (error) {
@@ -65,4 +65,55 @@ export async function registerUser(req, res) {
         res.status(500).json({error: 'Registration failed. Please try again.'})
     }
 
+}
+
+export async function loginUser(req, res) {
+    let {username, password} = req.body
+
+    // Checks login parameters
+    if (!username || !password) {
+        return res.status(400).json({error: 'All fields are required', isLoggedIn: false})
+    }
+
+    // Trims username
+    username = username.trim()
+
+    try {
+
+        // DB connection and query select statement
+        const connection = await getDBConnection()
+        const sqlQuery = 'SELECT * FROM users WHERE username = ?'
+
+        const result = await connection.query(sqlQuery, [username])
+        const user = result[0][0]
+
+        // Checks if user is valid
+        if (!user) {
+            res.status(401).json({error: 'Invalid credentials', isLoggedIn: false})
+            connection.end()
+            return
+        }
+
+        // Checks if password is valid
+        const isValid = await bcrypt.compare(password, user.password)
+        if (!isValid) {
+            res.status(401).json({error: 'Invalid credentials', isLoggedIn: false})
+            connection.end()
+            return
+        }
+
+        req.session.userId = user.user_id
+        res.json({message: 'Logged in', isLoggedIn: true})
+        connection.end()
+
+    } catch (err) {
+        console.error('Login error:', err.message)
+        res.status(500).json({error: 'Login failed. Please try again.', isLoggedIn: false})
+    }
+}
+
+export async function logoutUser(req, res) {
+    req.session.destroy(() => {
+        res.json({message: 'Logged out', isLoggedIn: false})
+    })
 }
