@@ -104,6 +104,7 @@ export async function loginUser(req, res) {
 
         req.session.userId = user.user_id
         res.json({message: 'Logged in', isLoggedIn: true})
+        console.log(`Success: ${user.username} is logged in.`)
         connection.end()
 
     } catch (err) {
