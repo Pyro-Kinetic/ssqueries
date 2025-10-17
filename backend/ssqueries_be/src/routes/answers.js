@@ -1,7 +1,7 @@
 import express from "express";
 import {getAnswers} from "../controllers/answersControllers.js";
 
-//queries/answers
 export const answersRouter = express.Router()
 
+//api/answers/data
 answersRouter.get('/data', getAnswers)

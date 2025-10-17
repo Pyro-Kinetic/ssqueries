@@ -27,13 +27,13 @@ app.use(session({
     }
 }))
 
-//ssqueries/users
+//api/users/data
 app.use('/api/users', usersRouter)
 
-//ssqueries/questions
+//api/questions/data
 app.use('/api/questions', questionsRouter)
 
-// /ssqueries/answers
+//api/answers/data
 app.use('/api/answers', answersRouter)
 
 //api/auth

@@ -1,7 +1,7 @@
 import express from 'express'
 import {getUsers} from '../controllers/usersControllers.js'
 
-//ssqueries/users
 export const usersRouter = express.Router()
 
+//api/users/data
 usersRouter.get('/data', getUsers)

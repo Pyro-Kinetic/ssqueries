@@ -5,8 +5,14 @@ export async function getQuestions(req, res) {
     try {
 
         const connection = await getDBConnection()
-        const result = await connection.execute(`SELECT *
-                                                 FROM questions`)
+        const result = await connection.execute(`SELECT users.user_id,
+                                                        users.username,
+                                                        questions.question_id,
+                                                        questions.content,
+                                                        questions.created_at,
+                                                        questions.planet
+                                                 FROM users
+                                                          JOIN questions ON users.user_id = questions.user_id`)
         const questions = result[0].map(row => row)
         res.json(questions)
 
