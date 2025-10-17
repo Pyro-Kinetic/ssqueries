@@ -56,7 +56,7 @@ export async function registerUser(req, res) {
         // Create express-session for new user
         req.session.userId = result[0].insertId
 
-        res.status(201).json({message: 'User registered'})
+        res.status(201).json({message: 'User registered', registered: true, sessionId: req.session})
         console.log('User added: ', result[0].insertId, req.body, 'Session: ', req.session)
         connection.end()
 
@@ -103,7 +103,7 @@ export async function loginUser(req, res) {
         }
 
         req.session.userId = user.user_id
-        res.json({message: 'Logged in', isLoggedIn: true})
+        res.json({message: 'Logged in', isLoggedIn: true, session: req.session.userId})
         console.log(`Success: ${user.username} is logged in.`)
         connection.end()
 

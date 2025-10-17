@@ -24,7 +24,7 @@
 
 .card {
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
   background: var(--card);
   color: var(--text);
   padding: 28px;
@@ -60,6 +60,12 @@
   border-color: var(--primary);
   box-shadow: 0 0 0 4px var(--ring);
   background: rgba(255,255,255,0.06);
+}
+
+.hint {
+  margin-top: 6px;
+  color: black;
+  font-size: 0.8rem;
 }
 
 .button {
@@ -136,12 +142,3 @@
 .secondaryButton:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.28); }
 .secondaryButton:active { transform: translateY(1px); }
 .secondaryButton:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.formSuccess {
-  margin-top: 10px;
-  color: #22c55e;
-  background: rgba(34,197,94,0.12);
-  border: 1px solid rgba(34,197,94,0.35);
-  padding: 10px 12px;
-  border-radius: 8px;
-}

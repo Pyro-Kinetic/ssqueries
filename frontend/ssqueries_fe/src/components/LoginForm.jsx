@@ -17,7 +17,7 @@ import astronaut from '../assets/astronaut.svg'
  * - onLogin?: (username: string, password: string) => Promise<any> | any
  * - apiUrl?: string (default: 'http://localhost:8000/api/auth/login/user')
  */
-export default function LoginForm({onLogin, apiUrl = 'http://localhost:8000/api/auth/login/user'}) {
+export default function LoginForm({onLogin, onShowCreateProfile, apiUrl = 'http://localhost:8000/api/auth/login/user', successMessage = '', onClearMessage}) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [errors, setErrors] = useState({username: '', password: '', form: ''})
@@ -45,6 +45,7 @@ export default function LoginForm({onLogin, apiUrl = 'http://localhost:8000/api/
     const handleSubmit = async (e) => {
         e.preventDefault()
         setErrors((prev) => ({...prev, form: ''}))
+        if (onClearMessage) onClearMessage()
 
         if (!validate()) return
 
@@ -67,6 +68,7 @@ export default function LoginForm({onLogin, apiUrl = 'http://localhost:8000/api/
             </header>
 
             <form className={styles.card} onSubmit={handleSubmit} noValidate>
+                {successMessage && <div className={styles.formSuccess}>{successMessage}</div>}
                 <h2 className={styles.title}>Sign in</h2>
 
                 <label className={styles.label} htmlFor="username">Username</label>
@@ -75,7 +77,7 @@ export default function LoginForm({onLogin, apiUrl = 'http://localhost:8000/api/
                     type="text"
                     className={styles.input}
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => { if (onClearMessage) onClearMessage(); setUsername(e.target.value) }}
                     placeholder="Enter your username"
                     autoComplete="username"
                 />
@@ -87,7 +89,7 @@ export default function LoginForm({onLogin, apiUrl = 'http://localhost:8000/api/
                     type="password"
                     className={styles.input}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => { if (onClearMessage) onClearMessage(); setPassword(e.target.value) }}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                 />
@@ -97,6 +99,13 @@ export default function LoginForm({onLogin, apiUrl = 'http://localhost:8000/api/
 
                 <button className={styles.button} type="submit" disabled={loading}>
                     {loading ? 'Logging in…' : 'Login'}
+                </button>
+                <button
+                    className={styles.secondaryButton}
+                    type="button"
+                    onClick={() => onShowCreateProfile && onShowCreateProfile()}
+                >
+                    Create Profile
                 </button>
             </form>
         </div>
