@@ -64,7 +64,7 @@
 
 .hint {
   margin-top: 6px;
-  color: black;
+  color: var(--muted);
   font-size: 0.8rem;
 }
 

@@ -15,9 +15,11 @@ import astronaut from '../assets/astronaut.svg'
  *
  * Props:
  * - onLogin?: (username: string, password: string) => Promise<any> | any
+ * - onShowCreateProfile?: () => void
+ * - onShowDashboard?: () => void
  * - apiUrl?: string (default: 'http://localhost:8000/api/auth/login/user')
  */
-export default function LoginForm({onLogin, onShowCreateProfile, apiUrl = 'http://localhost:8000/api/auth/login/user', successMessage = '', onClearMessage}) {
+export default function LoginForm({onLogin, onShowCreateProfile, onShowDashboard, apiUrl = 'http://localhost:8000/api/auth/login/user', successMessage = '', onClearMessage}) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [errors, setErrors] = useState({username: '', password: '', form: ''})
@@ -106,6 +108,13 @@ export default function LoginForm({onLogin, onShowCreateProfile, apiUrl = 'http:
                     onClick={() => onShowCreateProfile && onShowCreateProfile()}
                 >
                     Create Profile
+                </button>
+                <button
+                    className={styles.secondaryButton}
+                    type="button"
+                    onClick={() => onShowDashboard && onShowDashboard()}
+                >
+                    View Dashboard
                 </button>
             </form>
         </div>
