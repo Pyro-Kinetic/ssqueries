@@ -19,7 +19,15 @@ import astronaut from '../assets/astronaut.svg'
  * - onShowDashboard?: () => void
  * - apiUrl?: string (default: 'http://localhost:8000/api/auth/login/user')
  */
-export default function LoginForm({onLogin, onShowCreateProfile, onShowDashboard, apiUrl = 'http://localhost:8000/api/auth/login/user', successMessage = '', onClearMessage}) {
+export default function LoginForm({
+                                      onLogin,
+                                      onShowCreateProfile,
+                                      onShowDashboard,
+                                      onLoggedIn,
+                                      apiUrl = 'http://localhost:8000/api/auth/login/user',
+                                      successMessage = '',
+                                      onClearMessage
+                                  }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [errors, setErrors] = useState({username: '', password: '', form: ''})
@@ -39,9 +47,10 @@ export default function LoginForm({onLogin, onShowCreateProfile, onShowDashboard
     const handleLogin = async (u, p) => {
         if (onLogin) return onLogin(u, p)
 
-        // Post request to backend
-        const res = await axios.post(apiUrl, {username: u, password: p})
+        // Post a request to backend with credentials for the session cookie
+        const res = await axios.post(apiUrl, {username: u, password: p}, {withCredentials: true})
         console.log(res?.data)
+        return res?.data
     }
 
     const handleSubmit = async (e) => {
@@ -53,7 +62,16 @@ export default function LoginForm({onLogin, onShowCreateProfile, onShowDashboard
 
         try {
             setLoading(true)
-            await handleLogin(username.trim(), password)
+            const data = await handleLogin(username.trim(), password)
+            if (data?.isLoggedIn) {
+                if (typeof onShowDashboard === 'function') onShowDashboard()
+
+                if (typeof window !== 'undefined') console.log('Login success:', data)
+
+                if (typeof onLoggedIn === 'function') onLoggedIn(data.username || username.trim())
+            } else {
+                setErrors((prev) => ({...prev, form: data?.error || 'Invalid credentials'}))
+            }
         } catch (err) {
             const message = err?.response?.data?.error || err?.message || 'Login failed.'
             setErrors((prev) => ({...prev, form: message}))
@@ -79,7 +97,10 @@ export default function LoginForm({onLogin, onShowCreateProfile, onShowDashboard
                     type="text"
                     className={styles.input}
                     value={username}
-                    onChange={(e) => { if (onClearMessage) onClearMessage(); setUsername(e.target.value) }}
+                    onChange={(e) => {
+                        if (onClearMessage) onClearMessage();
+                        setUsername(e.target.value)
+                    }}
                     placeholder="Enter your username"
                     autoComplete="username"
                 />
@@ -91,7 +112,10 @@ export default function LoginForm({onLogin, onShowCreateProfile, onShowDashboard
                     type="password"
                     className={styles.input}
                     value={password}
-                    onChange={(e) => { if (onClearMessage) onClearMessage(); setPassword(e.target.value) }}
+                    onChange={(e) => {
+                        if (onClearMessage) onClearMessage();
+                        setPassword(e.target.value)
+                    }}
                     placeholder="Enter your password"
                     autoComplete="current-password"
                 />

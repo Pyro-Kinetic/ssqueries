@@ -11,7 +11,7 @@ const app = express()
 const PORT = process.env.PORT
 const secret = process.env.SECRET_KEY
 
-app.use(cors())
+app.use(cors({ origin: true, credentials: true }))
 
 app.use(express.json())
 

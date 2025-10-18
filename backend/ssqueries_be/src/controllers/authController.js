@@ -53,10 +53,10 @@ export async function registerUser(req, res) {
         // SQL query execution
         const result = await connection.query(insertUserQuery, insertUserQueryValues)
 
-        // Create express-session for new user
-        req.session.userId = result[0].insertId
+        // Create an express-session for new user
+        // req.session.userId = result[0].insertId
 
-        res.status(201).json({message: 'User registered', registered: true, sessionId: req.session})
+        res.status(201).json({message: 'User registered', registered: true})
         console.log('User added: ', result[0].insertId, req.body, 'Session: ', req.session)
         connection.end()
 
@@ -69,6 +69,7 @@ export async function registerUser(req, res) {
 
 export async function loginUser(req, res) {
     let {username, password} = req.body
+    let isLoggedIn = false
 
     // Checks login parameters
     if (!username || !password) {
@@ -103,7 +104,10 @@ export async function loginUser(req, res) {
         }
 
         req.session.userId = user.user_id
-        res.json({message: 'Logged in', isLoggedIn: true, session: req.session.userId})
+        req.session.username = user.username
+        isLoggedIn = !!req.session.userId;
+
+        res.json({message: 'Logged in', isLoggedIn: isLoggedIn, username: user.username})
         console.log(`Success: ${user.username} is logged in.`)
         connection.end()
 
@@ -117,4 +121,14 @@ export async function logoutUser(req, res) {
     req.session.destroy(() => {
         res.json({message: 'Logged out', isLoggedIn: false})
     })
+}
+
+export async function sessionStatus(req, res) {
+    try {
+        const isLoggedIn = !!req.session?.userId
+        const username = req.session?.username || null
+        res.json({isLoggedIn, username})
+    } catch (e) {
+        res.status(500).json({isLoggedIn: false})
+    }
 }

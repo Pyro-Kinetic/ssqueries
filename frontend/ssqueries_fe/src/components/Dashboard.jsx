@@ -124,7 +124,7 @@ export default function Dashboard({ username = '', onLogout, apiBase = 'http://l
           <h1 className={styles.title}>Solar System Query</h1>
         </div>
         <div className={styles.userArea}>
-          {username && <span className={styles.username}>Welcome, {username}</span>}
+          {username && <span className={styles.username}>welcome '{username}'</span>}
           <button className={styles.logout} onClick={() => onLogout && onLogout()} aria-label="Logout">
             Logout
           </button>
