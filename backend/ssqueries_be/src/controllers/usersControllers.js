@@ -9,11 +9,11 @@ export async function getUsers(req, res) {
         const result = await connection.execute(`SELECT *
                                                  FROM users`);
         const users = result[0].map(row => row)
+        await connection.end()
         res.json(users)
 
         console.log('Results: ', result[0])
         console.log('Fields: ', result[1])
-        connection.end()
 
     } catch (error) {
         res.status(500).json({

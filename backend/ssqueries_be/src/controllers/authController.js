@@ -38,8 +38,8 @@ export async function registerUser(req, res) {
 
         if (existingUser[0].length > 0) {
             console.log('User exists: ', existingUser[0], req.body)
+            await connection.end()
             res.status(400).json({error: 'Username already in use'})
-            connection.end()
             return
         }
 
@@ -56,9 +56,9 @@ export async function registerUser(req, res) {
         // Create an express-session for new user
         // req.session.userId = result[0].insertId
 
+        await connection.end()
         res.status(201).json({message: 'User registered', registered: true})
         console.log('User added: ', result[0].insertId, req.body, 'Session: ', req.session)
-        connection.end()
 
     } catch (error) {
         console.error('Registration error: ', error.message)
@@ -90,16 +90,16 @@ export async function loginUser(req, res) {
 
         // Checks if user is valid
         if (!user) {
+            await connection.end()
             res.status(401).json({error: 'Invalid credentials', isLoggedIn: false})
-            connection.end()
             return
         }
 
         // Checks if password is valid
         const isValid = await bcrypt.compare(password, user.password)
         if (!isValid) {
+            await connection.end()
             res.status(401).json({error: 'Invalid credentials', isLoggedIn: false})
-            connection.end()
             return
         }
 
@@ -107,9 +107,9 @@ export async function loginUser(req, res) {
         req.session.username = user.username
         isLoggedIn = !!req.session.userId;
 
+        await connection.end()
         res.json({message: 'Logged in', isLoggedIn: isLoggedIn, username: user.username})
         console.log(`Success: ${user.username} is logged in.`)
-        connection.end()
 
     } catch (err) {
         console.error('Login error:', err.message)

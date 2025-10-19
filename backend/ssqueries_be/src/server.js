@@ -30,13 +30,13 @@ app.use(session({
 //api/users/data
 app.use('/api/users', usersRouter)
 
-//api/questions/data
+//api/questions/...
 app.use('/api/questions', questionsRouter)
 
-//api/answers/data
+//api/answers/...
 app.use('/api/answers', answersRouter)
 
-//api/auth
+//api/auth/...
 app.use('/api/auth', authRouter)
 
 
