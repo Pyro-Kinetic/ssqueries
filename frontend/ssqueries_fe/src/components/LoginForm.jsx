@@ -1,5 +1,4 @@
 import React, {useState} from 'react'
-import 'dotenv/config'
 import axios from 'axios'
 import styles from './LoginForm.module.css'
 import astronaut from '../assets/astronaut.svg'
@@ -25,7 +24,7 @@ export default function LoginForm({
                                       onShowCreateProfile,
                                       onShowDashboard,
                                       onLoggedIn,
-                                      apiUrl = `${process.env.REACT_APP_BACKEND_URL}/api/auth/login/user`,
+                                      apiUrl = `${import.meta.env.VITE_BACKEND_URL}/api/auth/login/user`,
                                       successMessage = '',
                                       onClearMessage
                                   }) {

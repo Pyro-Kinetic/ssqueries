@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import axios from 'axios'
 import React, {useState} from 'react'
 import styles from './CreateProfileForm.module.css'
@@ -21,7 +20,7 @@ import astronaut from '../assets/astronaut.svg'
  */
 export default function CreateProfileForm({
                                               onCreate,
-                                              apiUrl = `${process.env.REACT_APP_BACKEND_URL}/api/auth/register/user`,
+                                              apiUrl = `${import.meta.env.VITE_BACKEND_URL}/api/auth/register/user`,
                                               onSuccess,
                                               onShowLogin
                                           }) {
