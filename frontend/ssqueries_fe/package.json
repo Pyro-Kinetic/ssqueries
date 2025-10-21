@@ -1,6 +1,5 @@
 {
   "name": "ssqueries",
-  "homepage": "https://pyro-kinetic.github.io/ssqueries",
   "private": true,
   "version": "0.0.0",
   "type": "module",
