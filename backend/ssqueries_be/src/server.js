@@ -11,7 +11,29 @@ const app = express()
 const PORT = process.env.PORT
 const secret = process.env.SECRET_KEY
 
-app.use(cors({ origin: true, credentials: true }))
+// CORS configuration - allow only specified origins
+const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
+    'https://pyro-kinetic.github.io'
+]
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl/Postman)
+        if (!origin) return callback(null, true)
+        if (allowedOrigins.includes(origin)) return callback(null, true)
+        return callback(new Error('Not allowed by CORS'))
+    },
+    credentials: true
+}
+
+app.use(cors(corsOptions))
+
+// Handle preflight requests
+app.options('*', cors(corsOptions))
 
 app.use(express.json())
 
