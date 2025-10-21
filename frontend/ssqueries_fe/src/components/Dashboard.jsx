@@ -1,4 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react'
+import 'dotenv/config'
 import axios from 'axios'
 import styles from './Dashboard.module.css'
 import sunPng from '../assets/sun.png'
@@ -27,7 +28,7 @@ import AnswerQuestion from './AnswerQuestion.jsx'
  * - onLogout?: () => void
  * - apiBase?: string (default 'http://localhost:8000')
  */
-export default function Dashboard({username = '', onLogout, apiBase = 'http://localhost:8000'}) {
+export default function Dashboard({username = '', onLogout, apiBase = process.env.REACT_APP_BACKEND_URL}) {
     const CATEGORIES = useMemo(
         () => [
             'Sun', 'Mercury', 'Venus', 'Earth', 'Mars',

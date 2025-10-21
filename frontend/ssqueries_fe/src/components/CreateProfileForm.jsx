@@ -1,5 +1,6 @@
-import React, {useState} from 'react'
+import 'dotenv/config'
 import axios from 'axios'
+import React, {useState} from 'react'
 import styles from './CreateProfileForm.module.css'
 import astronaut from '../assets/astronaut.svg'
 
@@ -18,7 +19,12 @@ import astronaut from '../assets/astronaut.svg'
  * - onCreate?: (username: string, password: string) => Promise<any> | any
  * - apiUrl?: string (default: 'http://localhost:8000/api/auth/register/user')
  */
-export default function CreateProfileForm({onCreate, apiUrl = 'http://localhost:8000/api/auth/register/user', onSuccess, onShowLogin}) {
+export default function CreateProfileForm({
+                                              onCreate,
+                                              apiUrl = `${process.env.REACT_APP_BACKEND_URL}/api/auth/register/user`,
+                                              onSuccess,
+                                              onShowLogin
+                                          }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [confirm, setConfirm] = useState('')

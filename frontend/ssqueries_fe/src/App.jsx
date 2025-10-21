@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import 'dotenv/config'
 import axios from 'axios'
 import LoginForm from './components/LoginForm.jsx'
 import CreateProfileForm from './components/CreateProfileForm.jsx'
@@ -10,7 +11,7 @@ function App() {
     const [username, setUsername] = useState('')
     const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-    const apiBase = 'http://localhost:8000'
+    const apiBase = process.env.REACT_APP_BACKEND_URL
 
     // Check session on an initial load
     useEffect(() => {

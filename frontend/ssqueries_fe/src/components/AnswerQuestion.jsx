@@ -1,8 +1,14 @@
-import React, {useState} from 'react'
+import 'dotenv/config'
 import axios from 'axios'
+import React, {useState} from 'react'
 import styles from './Dashboard.module.css'
 
-export default function AnswerQuestion({username, questionId, apiBase = 'http://localhost:8000', onSubmitted}) {
+export default function AnswerQuestion({
+                                           username,
+                                           questionId,
+                                           apiBase = process.env.REACT_APP_BACKEND_URL,
+                                           onSubmitted
+                                       }) {
     const [content, setContent] = useState('')
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState('')
