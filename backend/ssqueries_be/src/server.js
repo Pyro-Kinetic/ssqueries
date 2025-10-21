@@ -32,8 +32,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
-// Handle preflight requests
-app.options('*', cors(corsOptions))
+// Handle preflight requests (Express 5 requires a valid path pattern)
+app.options('/(.*)', cors(corsOptions))
 
 app.use(express.json())
 
