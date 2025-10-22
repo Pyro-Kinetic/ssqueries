@@ -81,7 +81,7 @@ export default function CreateProfileForm({
                 <h1 className={styles.brandTitle}>Solar System Queries</h1>
             </header>
 
-            <form className={styles.card} onSubmit={onSubmit} noValidate>
+            <form className={styles.card} onSubmit={onSubmit} method="post" noValidate>
                 <h2 className={styles.title}>Create New Profile</h2>
 
                 <label htmlFor="username" className={styles.label}>Username</label>
