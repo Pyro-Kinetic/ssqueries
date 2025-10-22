@@ -17,6 +17,11 @@ const app = express()
 const PORT = process.env.PORT
 const secret = process.env.SECRET_KEY
 
+// Ensure correct secure cookies behind proxies (e.g., Railway)
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1)
+}
+
 // Local connection pool
 // const sessionDBPool = mysql.createPool({
 //   host: process.env.DB_HOST || 'localhost',
@@ -50,13 +55,16 @@ const corsOptions = {
         if (allowedOrigins.includes(origin)) return callback(null, true)
         return callback(new Error('Not allowed by CORS'))
     },
-    credentials: true
+    credentials: true,
+    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+    allowedHeaders: ['Content-Type','Authorization'],
+    optionsSuccessStatus: 204
 }
 
 app.use(cors(corsOptions))
 
-// // Handle preflight requests
-// app.options('/:path(*)', cors(corsOptions))
+// Handle preflight requests globally
+app.options('*', cors(corsOptions))
 
 app.use(express.json())
 
@@ -69,7 +77,7 @@ app.use(session({
     cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
 }))
