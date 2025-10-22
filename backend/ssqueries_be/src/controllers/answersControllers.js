@@ -11,13 +11,13 @@ export async function getAnswers(req, res) {
                                                         a.created_at  as created_at,
                                                         u.username    as username
                                                  FROM questions q
-                                                 JOIN answers a ON q.question_id = a.question_id
-                                                 JOIN users u ON u.user_id = a.user_id`)
+                                                          JOIN answers a ON q.question_id = a.question_id
+                                                          JOIN users u ON u.user_id = a.user_id`)
         const answers = result[0].map(row => row)
         res.json(answers)
 
-        console.log('Result: ', result[0])
-        console.log('Fields: ', result[1])
+        // console.log('Result: ', result[0])
+        // console.log('Fields: ', result[1])
         await connection.end()
 
     } catch (error) {
@@ -86,7 +86,7 @@ export async function addAnswer(req, res) {
         })
 
     } catch (error) {
-        console.log('Post Answer Error: ', error)
+        // console.log('Post Answer Error: ', error)
         res.status(500).json({error: 'Failed to post answer. Please try again.', details: error.message})
     }
 }

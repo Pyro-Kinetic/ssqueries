@@ -62,7 +62,6 @@ const corsOptions = {
 }
 
 // Manual preflight responder to avoid path-to-regexp wildcard issues (Express 5)
-// Must be before app.use(cors(...)) and any routes
 app.use((req, res, next) => {
     if (req.method !== 'OPTIONS') return next()
     const origin = req.headers.origin

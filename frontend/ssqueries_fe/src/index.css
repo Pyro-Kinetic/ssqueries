@@ -1,5 +1,3 @@
-
-
 /*
   Global responsive media queries (desktop-first)
   - Define your default (desktop) styles outside of media queries
@@ -18,63 +16,96 @@
 
 /* Base (desktop-first) styles */
 :root {
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --container-max: 1200px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --container-max: 1200px;
 }
 
 html, body, #root {
-  height: 100%;
+    height: 100%;
 }
 
 body {
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Utility layout helpers */
 .container {
-  max-width: var(--container-max);
-  margin-inline: auto;
-  padding-inline: var(--space-5);
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-5);
 }
 
 .grid-12 {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: var(--space-5);
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--space-5);
 }
 
-.hide-on-mobile { display: block; }
-.show-on-mobile { display: none; }
+.hide-on-mobile {
+    display: block;
+}
+
+.show-on-mobile {
+    display: none;
+}
 
 /* <= 1200px: Narrow desktop/large screens downscaling */
 @media (max-width: 1200px) {
-  :root { --container-max: 1100px; }
-  .grid-12 { gap: var(--space-4); }
+    :root {
+        --container-max: 1100px;
+    }
+
+    .grid-12 {
+        gap: var(--space-4);
+    }
 }
 
 /* <= 1024px: Laptop / large tablet */
 @media (max-width: 1024px) {
-  .grid-12 { grid-template-columns: repeat(8, 1fr); }
-  .container { padding-inline: var(--space-4); }
+    .grid-12 {
+        grid-template-columns: repeat(8, 1fr);
+    }
+
+    .container {
+        padding-inline: var(--space-4);
+    }
 }
 
 /* <= 768px: Tablet */
 @media (max-width: 768px) {
-  .grid-12 { grid-template-columns: repeat(6, 1fr); gap: var(--space-3); }
-  .container { padding-inline: var(--space-3); }
+    .grid-12 {
+        grid-template-columns: repeat(6, 1fr);
+        gap: var(--space-3);
+    }
+
+    .container {
+        padding-inline: var(--space-3);
+    }
 }
 
 /* <= 480px: Mobile */
 @media (max-width: 480px) {
-  .grid-12 { grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
-  .container { padding-inline: var(--space-2); }
-  .hide-on-mobile { display: none; }
-  .show-on-mobile { display: block; }
+    .grid-12 {
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--space-2);
+    }
+
+    .container {
+        padding-inline: var(--space-2);
+    }
+
+    .hide-on-mobile {
+        display: none;
+    }
+
+    .show-on-mobile {
+        display: block;
+    }
 }

@@ -1,5 +1,6 @@
 import express from "express";
-import {getAnswers, addAnswer} from "../controllers/answersControllers.js";
+import {addAnswer, getAnswers} from "../controllers/answersControllers.js";
+import {requireSession} from "../middleware/requireSession.js";
 
 export const answersRouter = express.Router()
 
@@ -7,4 +8,4 @@ export const answersRouter = express.Router()
 answersRouter.get('/data', getAnswers)
 
 //api/answers/add
-answersRouter.post('/add', addAnswer)
+answersRouter.post('/add', requireSession, addAnswer)

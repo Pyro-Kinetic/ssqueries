@@ -61,3 +61,6 @@ Frontend:
 - Open the printed local URL
 
 ## 🗄️ Database Schema (Minimal)
+- users table: (id, username, password)
+- questions table: (id, user-id, content, created-at, planet)
+- answers table: (id, user-id, content, created-at, question-id)

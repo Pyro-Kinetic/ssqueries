@@ -4,6 +4,13 @@ import LoginForm from './components/LoginForm.jsx'
 import CreateProfileForm from './components/CreateProfileForm.jsx'
 import Dashboard from './components/Dashboard.jsx'
 
+/**
+ * A React functional component that manages user authentication and routing between login,
+ * profile creation, and the dashboard. The component handles user session validation, login/logout,
+ * and view rendering based on the user's authentication state.
+ *
+ * @return {JSX.Element} The rendered component based on the current view ('login', 'create', or 'dashboard').
+ */
 function App() {
     const [view, setView] = useState('login')
     const [flash, setFlash] = useState('')

@@ -17,8 +17,8 @@ export async function getQuestions(req, res) {
         const questions = result[0].map(row => row)
         res.json(questions)
 
-        console.log('Results: ', result[0])
-        console.log('Fields: ', result[1])
+        // console.log('Results: ', result[0])
+        // console.log('Fields: ', result[1])
         await connection.end()
 
     } catch (error) {
@@ -99,7 +99,7 @@ export async function addQuestion(req, res) {
         return res.status(201).json(created)
 
     } catch (error) {
-        console.log('Post Question Error: ', error)
+        // console.log('Post Question Error: ', error)
         res.status(500).json({
             error: 'Failed to post question. Please try again.',
             details: error.message

@@ -49,7 +49,7 @@ export default function LoginForm({
 
         // Post a request to backend with credentials for the session cookie
         const res = await axios.post(apiUrl, {username: u, password: p}, {withCredentials: true})
-        console.log(res?.data)
+        // console.log(res?.data)
         return res?.data
     }
 

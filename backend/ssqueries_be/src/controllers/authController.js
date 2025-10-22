@@ -37,7 +37,7 @@ export async function registerUser(req, res) {
         const existingUser = await connection.query(selectIDQuery, [userName])
 
         if (existingUser[0].length > 0) {
-            console.log('User exists: ', existingUser[0], req.body)
+            // console.log('User exists: ', existingUser[0], req.body)
             await connection.end()
             res.status(400).json({error: 'Username already in use'})
             return
@@ -58,7 +58,7 @@ export async function registerUser(req, res) {
 
         await connection.end()
         res.status(201).json({message: 'User registered', registered: true})
-        console.log('User added: ', result[0].insertId, req.body, 'Session: ', req.session)
+        // console.log('User added: ', result[0].insertId, req.body, 'Session: ', req.session)
 
     } catch (error) {
         console.error('Registration error: ', error.message)
@@ -109,7 +109,7 @@ export async function loginUser(req, res) {
 
         await connection.end()
         res.json({message: 'Logged in', isLoggedIn: isLoggedIn, username: user.username})
-        console.log(`Success: ${user.username} is logged in.`)
+        // console.log(`Success: ${user.username} is logged in.`)
 
     } catch (err) {
         console.error('Login error:', err.message)

@@ -2,6 +2,17 @@ import axios from 'axios'
 import React, {useState} from 'react'
 import styles from './Dashboard.module.css'
 
+/**
+ * Handles rendering and submission of an answer to a specific question.
+ *
+ * @param {Object} params                 The parameters for the AnswerQuestion component.
+ * @param {string} params.username        The username of the user submitting the answer.
+ * @param {string} params.questionId      The ID of the question being answered.
+ * @param {string} [params.apiBase]       The base URL of the API for submitting answers. Defaults to an environment variable.
+ * @param {Function} [params.onSubmitted] A callback function invoked after a successful answer submission.
+ *
+ * @return {JSX.Element} The rendered answer input form and associated functionalities.
+ */
 export default function AnswerQuestion({
                                            username,
                                            questionId,

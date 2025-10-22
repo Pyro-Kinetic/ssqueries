@@ -2,6 +2,18 @@ import React, {useState} from 'react'
 import axios from 'axios'
 import styles from './Dashboard.module.css'
 
+/**
+ * PostQuestion component handles the submission of a question to a specific API endpoint.
+ * It collects user input, manages the state of the submission process, handles errors, and notifies the parent component upon successful submission.
+ *
+ * @param {Object} props - Component properties.
+ * @param {string} props.username - The username of the person submitting the question.
+ * @param {string} props.planet - The name of the planet the question is related to.
+ * @param {string} [props.apiBase=import.meta.env.VITE_BACKEND_URL] - The base URL of the API endpoint for submitting the question.
+ * @param {Function} [props.onSubmitted] - Callback function executed when a question is successfully submitted. Receives the API response as its argument.
+ *
+ * @return {JSX.Element} The rendered form component for submitting a question.
+ */
 export default function PostQuestion({username, planet, apiBase = import.meta.env.VITE_BACKEND_URL, onSubmitted}) {
     const [content, setContent] = useState('')
     const [submitting, setSubmitting] = useState(false)

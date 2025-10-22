@@ -12,8 +12,8 @@ export async function getUsers(req, res) {
         await connection.end()
         res.json(users)
 
-        console.log('Results: ', result[0])
-        console.log('Fields: ', result[1])
+        // console.log('Results: ', result[0])
+        // console.log('Fields: ', result[1])
 
     } catch (error) {
         res.status(500).json({
