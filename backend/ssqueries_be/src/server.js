@@ -2,14 +2,37 @@ import 'dotenv/config'
 import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
+
+// Routers
 import {authRouter} from "./routes/auth.js";
 import {usersRouter} from "./routes/users.js";
 import {answersRouter} from "./routes/answers.js";
 import {questionsRouter} from "./routes/questions.js";
 
+// Session store
+import mysql from 'mysql2/promise'
+import MySQLSession from 'express-mysql-session'
+
 const app = express()
 const PORT = process.env.PORT
 const secret = process.env.SECRET_KEY
+
+// Local connection pool
+// const sessionDBPool = mysql.createPool({
+//   host: process.env.DB_HOST || 'localhost',
+//   port: Number(process.env.DB_PORT || 3306),
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASSWORD,
+//   database: process.env.DB_NAME,
+//   connectionLimit: 10
+// })
+
+// Production connection pool
+const sessionDBPool = mysql.createPool(process.env.MYSQL_URL)
+
+// Initialize the session store
+const MySQLStore = MySQLSession(session)
+const sessionStore = new MySQLStore({}, sessionDBPool)
 
 // CORS configuration - allow only specified origins
 const allowedOrigins = [
@@ -32,20 +55,22 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
-// // Handle preflight requests (Express 5 requires a valid path pattern)
+// // Handle preflight requests
 // app.options('/:path(*)', cors(corsOptions))
 
 app.use(express.json())
 
 app.use(session({
     secret: secret,
+    store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     cookie: {
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 24
+        maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
 }))
 
@@ -61,12 +86,9 @@ app.use('/api/answers', answersRouter)
 //api/auth/...
 app.use('/api/auth', authRouter)
 
-
-// test
-app.get('/', (req, res) => {
-    res.json({
-        test: 'working'
-    })
+//bad endpoint...
+app.use((req, res) => {
+    res.status(404).json({ message: "Endpoint not found." })
 })
 
 function runServer(server) {

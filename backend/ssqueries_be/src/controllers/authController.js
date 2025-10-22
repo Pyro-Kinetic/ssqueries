@@ -53,8 +53,8 @@ export async function registerUser(req, res) {
         // SQL query execution
         const result = await connection.query(insertUserQuery, insertUserQueryValues)
 
-        // Create an express-session for new user
-        // req.session.userId = result[0].insertId
+        // Create an express-session for a new user
+        req.session.userId = result[0].insertId
 
         await connection.end()
         res.status(201).json({message: 'User registered', registered: true})
