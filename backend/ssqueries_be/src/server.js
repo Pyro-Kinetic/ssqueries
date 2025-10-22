@@ -56,15 +56,32 @@ const corsOptions = {
         return callback(new Error('Not allowed by CORS'))
     },
     credentials: true,
-    methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
-    allowedHeaders: ['Content-Type','Authorization'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     optionsSuccessStatus: 204
 }
 
-app.use(cors(corsOptions))
+// Manual preflight responder to avoid path-to-regexp wildcard issues (Express 5)
+// Must be before app.use(cors(...)) and any routes
+app.use((req, res, next) => {
+    if (req.method !== 'OPTIONS') return next()
+    const origin = req.headers.origin
 
-// // Handle preflight requests globally
-// app.options('(.*)', cors(corsOptions))
+    if (origin && allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin)
+        res.setHeader('Vary', 'Origin')
+        res.setHeader('Access-Control-Allow-Credentials', 'true')
+        // Reflect requested headers if provided
+        const reqHeaders = req.headers['access-control-request-headers']
+        res.setHeader('Access-Control-Allow-Headers', reqHeaders || 'Content-Type, Authorization')
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+        return res.sendStatus(204)
+    }
+
+    return next()
+})
+
+app.use(cors(corsOptions))
 
 app.use(express.json())
 
@@ -96,7 +113,7 @@ app.use('/api/auth', authRouter)
 
 //bad endpoint...
 app.use((req, res) => {
-    res.status(404).json({ message: "Endpoint not found." })
+    res.status(404).json({message: "Endpoint not found."})
 })
 
 function runServer(server) {
