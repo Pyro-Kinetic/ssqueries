@@ -64,7 +64,7 @@ const corsOptions = {
 app.use(cors(corsOptions))
 
 // Handle preflight requests globally
-app.options('/*', cors(corsOptions))
+app.options('(.*)', cors(corsOptions))
 
 app.use(express.json())
 
