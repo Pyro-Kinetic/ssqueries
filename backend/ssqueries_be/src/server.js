@@ -3,8 +3,6 @@ import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
 
-//.env changes
-
 // Routers
 import {authRouter} from "./routes/auth.js";
 import {usersRouter} from "./routes/users.js";
