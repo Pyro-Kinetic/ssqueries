@@ -53,11 +53,24 @@ export async function registerUser(req, res) {
         // SQL query execution
         const result = await connection.query(insertUserQuery, insertUserQueryValues)
 
-        // Create an express-session for a new user
-        req.session.userId = result[0].insertId
-
         await connection.end()
-        res.status(201).json({message: 'User registered', registered: true})
+
+        // Create session for the new user
+        req.session.regenerate((err) => {
+            if (err) {
+                console.error('Session regenerate error: ', err)
+                return res.status(500).json({error: 'Registration failed. Please try again.'})
+            }
+            req.session.userId = result[0].insertId
+            req.session.username = userName
+            req.session.save((saveErr) => {
+                if (saveErr) {
+                    console.error('Session save error: ', saveErr)
+                    return res.status(500).json({error: 'Registration failed. Please try again.'})
+                }
+                return res.status(201).json({message: 'User registered', registered: true})
+            })
+        })
         // console.log('User added: ', result[0].insertId, req.body, 'Session: ', req.session)
 
     } catch (error) {
@@ -69,7 +82,6 @@ export async function registerUser(req, res) {
 
 export async function loginUser(req, res) {
     let {username, password} = req.body
-    let isLoggedIn = false
 
     // Checks login parameters
     if (!username || !password) {
@@ -103,12 +115,24 @@ export async function loginUser(req, res) {
             return
         }
 
-        req.session.userId = user.user_id
-        req.session.username = user.username
-        isLoggedIn = !!req.session.userId;
-
         await connection.end()
-        res.json({message: 'Logged in', isLoggedIn: isLoggedIn, username: user.username})
+
+        // Regenerate session for logged in user
+        req.session.regenerate((err) => {
+            if (err) {
+                console.error('Session regenerate error (login):', err)
+                return res.status(500).json({error: 'Login failed. Please try again.', isLoggedIn: false})
+            }
+            req.session.userId = user.user_id
+            req.session.username = user.username
+            req.session.save((saveErr) => {
+                if (saveErr) {
+                    console.error('Session save error (login):', saveErr)
+                    return res.status(500).json({error: 'Login failed. Please try again.', isLoggedIn: false})
+                }
+                return res.json({message: 'Logged in', isLoggedIn: true, username: user.username})
+            })
+        })
         // console.log(`Success: ${user.username} is logged in.`)
 
     } catch (err) {
