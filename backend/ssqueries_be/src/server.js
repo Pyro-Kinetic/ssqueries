@@ -55,7 +55,8 @@ const corsOptions = {
         if (isDev) return callback(null, true)
         if (allowedOrigins.includes(origin)) return callback(null, true)
 
-        return callback(new Error('Not allowed by CORS'))
+        // return callback(new Error('Not allowed by CORS'))
+        return callback(null, true)
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
