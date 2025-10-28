@@ -18,9 +18,8 @@ const PORT = process.env.PORT
 const secret = process.env.SECRET_KEY
 
 // Ensure correct secure cookies behind proxies (e.g., Railway)
-if (process.env.NODE_ENV === 'production') {
-    app.set('trust proxy', 1)
-}
+if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1)
+
 
 // Local connection pool
 // const sessionDBPool = mysql.createPool({
@@ -48,11 +47,14 @@ const allowedOrigins = [
     'https://pyro-kinetic.github.io'
 ]
 
+const isDev = process.env.NODE_ENV !== 'production'
+
 const corsOptions = {
-    origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl/Postman)
+    origin: (origin, callback) => {
         if (!origin) return callback(null, true)
+        if (isDev) return callback(null, true)
         if (allowedOrigins.includes(origin)) return callback(null, true)
+
         return callback(new Error('Not allowed by CORS'))
     },
     credentials: true,
@@ -61,23 +63,34 @@ const corsOptions = {
     optionsSuccessStatus: 204
 }
 
-// Manual preflight responder to avoid path-to-regexp wildcard issues (Express 5)
+// Manuel preflight responder
 app.use((req, res, next) => {
     if (req.method !== 'OPTIONS') return next()
-    const origin = req.headers.origin
 
-    if (origin && allowedOrigins.includes(origin)) {
+    const origin = req.headers.origin
+    if (origin && (isDev || allowedOrigins.includes(origin))) {
         res.setHeader('Access-Control-Allow-Origin', origin)
         res.setHeader('Vary', 'Origin')
         res.setHeader('Access-Control-Allow-Credentials', 'true')
-        // Reflect requested headers if provided
+
         const reqHeaders = req.headers['access-control-request-headers']
         res.setHeader('Access-Control-Allow-Headers', reqHeaders || 'Content-Type, Authorization')
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
         return res.sendStatus(204)
     }
-
     return next()
+})
+
+// Reflect origin if responses are normal
+app.use((req, res, next) => {
+    const origin = req.headers.origin
+
+    if (origin && (isDev || allowedOrigins.includes(origin))) {
+        res.setHeader('Access-Control-Allow-Origin', origin)
+        res.setHeader('Vary', 'Origin')
+        res.setHeader('Access-Control-Allow-Credentials', 'true')
+    }
+    next()
 })
 
 app.use(cors(corsOptions))
