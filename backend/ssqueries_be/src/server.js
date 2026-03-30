@@ -1,4 +1,5 @@
-import 'dotenv/config'
+import './config/loadEnv.js'
+import {redisStore} from './config/loadRedis.js'
 import cors from 'cors'
 import express from 'express'
 import session from 'express-session'
@@ -9,93 +10,62 @@ import {usersRouter} from "./routes/users.js";
 import {answersRouter} from "./routes/answers.js";
 import {questionsRouter} from "./routes/questions.js";
 
-// Session store
-import { createClient } from 'redis'
-import RedisStore from 'connect-redis'
-
 const app = express()
 const PORT = process.env.PORT
-const secret = process.env.SECRET_KEY
+const sessionSecret = process.env.SESSION_SECRET
 
 // Ensure correct secure cookies behind proxies (e.g., Railway)
-if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1)
+const nodeEnv = process.env.NODE_ENV || 'development'
+const isProduction = nodeEnv === 'production'
 
-// Initialize the session store
-const redisClient = createClient({
-    url: process.env.REDIS_URL || 'redis://localhost:6379'
-})
-redisClient.connect().catch(console.error)
-
-const sessionStore = new RedisStore({
-    client: redisClient,
-    prefix: "ssqueries:"
-})
+const sessionStore = redisStore
 
 // CORS configuration - allow only specified origins
-const allowedOrigins = [
-    // 'http://localhost:3000',
-    // 'http://localhost:5173',
-    // 'http://127.0.0.1:3000',
-    // 'http://127.0.0.1:5173',
-    'https://pyro-kinetic.github.io'
-]
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173', 'https://pyro-kinetic.github.io']
+const uniqueOrigins = [...new Set(allowedOrigins)]
 
-const isDev = process.env.NODE_ENV !== 'production'
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin) return callback(null, true)
-        if (isDev) return callback(null, true)
-        if (allowedOrigins.includes(origin)) return callback(null, true)
+console.log('Allowed Origins (initial):', uniqueOrigins)
 
-        return callback(new Error('Not allowed by CORS'))
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    optionsSuccessStatus: 204
+if (!sessionSecret || sessionSecret.length < 64) {
+    console.error('Missing or invalid SESSION_SECRET environment variable.')
+    process.exit(1)
 }
 
-// Manuel preflight responder
-app.use((req, res, next) => {
-    if (req.method !== 'OPTIONS') return next()
+if (isProduction) {
+    app.set('trust proxy', 1)
+}
 
-    const origin = req.headers.origin
-    if (origin && (isDev || allowedOrigins.includes(origin))) {
-        res.setHeader('Access-Control-Allow-Origin', origin)
-        res.setHeader('Vary', 'Origin')
-        res.setHeader('Access-Control-Allow-Credentials', 'true')
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
 
-        const reqHeaders = req.headers['access-control-request-headers']
-        res.setHeader('Access-Control-Allow-Headers', reqHeaders || 'Content-Type, Authorization')
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
-        return res.sendStatus(204)
-    }
-    return next()
-})
+        // Remove the trailing slash from the incoming origin (value)
+        const normalizeOrigin = (val) => val.toLowerCase().trim().replace(/\/$/, '');
 
-// Reflect origin if responses are normal
-app.use((req, res, next) => {
-    const origin = req.headers.origin
+        const cleanOrigin = normalizeOrigin(origin);
 
-    if (origin && (isDev || allowedOrigins.includes(origin))) {
-        res.setHeader('Access-Control-Allow-Origin', origin)
-        res.setHeader('Vary', 'Origin')
-        res.setHeader('Access-Control-Allow-Credentials', 'true')
-    }
-    next()
-})
+        // Compare the cleaned origin with the unique origins
+        const isAllowed = uniqueOrigins.some(o => {
+            if (!o) return false;
+            return normalizeOrigin(o) === cleanOrigin;
+        });
 
-app.use(cors(corsOptions))
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked for origin: ${origin}`);
+            console.log('Allowed Origins (loaded from Env):', uniqueOrigins);
+            console.log('Cleaned incoming origin:', cleanOrigin);
+            callback(null, false);
+        }
+    }, credentials: true, optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}))
 
 app.use(express.json())
 
 app.use(session({
-    secret: secret,
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    rolling: true,
-    cookie: {
+    secret: sessionSecret, store: sessionStore, resave: false, saveUninitialized: false, rolling: true, cookie: {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
