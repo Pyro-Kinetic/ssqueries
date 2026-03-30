@@ -4,12 +4,10 @@ export async function getUsers(req, res) {
 
     try {
 
-        const connection = await getDBConnection()
+        const pool = getDBConnection()
 
-        const result = await connection.execute(`SELECT *
-                                                 FROM users`);
-        const users = result[0].map(row => row)
-        await connection.end()
+        const result = await pool.query(`SELECT * FROM users`);
+        const users = result.rows
         res.json(users)
 
         // console.log('Results: ', result[0])

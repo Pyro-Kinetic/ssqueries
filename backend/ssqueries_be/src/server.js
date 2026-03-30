@@ -10,8 +10,8 @@ import {answersRouter} from "./routes/answers.js";
 import {questionsRouter} from "./routes/questions.js";
 
 // Session store
-import mysql from 'mysql2/promise'
-import MySQLSession from 'express-mysql-session'
+import { createClient } from 'redis'
+import RedisStore from 'connect-redis'
 
 const app = express()
 const PORT = process.env.PORT
@@ -20,23 +20,16 @@ const secret = process.env.SECRET_KEY
 // Ensure correct secure cookies behind proxies (e.g., Railway)
 if (process.env.NODE_ENV === 'production') app.set('trust proxy', 1)
 
-
-// Local connection pool
-// const sessionDBPool = mysql.createPool({
-//   host: process.env.DB_HOST || 'localhost',
-//   port: Number(process.env.DB_PORT || 3306),
-//   user: process.env.DB_USER,
-//   password: process.env.DB_PASSWORD,
-//   database: process.env.DB_NAME,
-//   connectionLimit: 10
-// })
-
-// Production connection pool
-const sessionDBPool = mysql.createPool(process.env.MYSQL_URL)
-
 // Initialize the session store
-const MySQLStore = MySQLSession(session)
-const sessionStore = new MySQLStore({}, sessionDBPool)
+const redisClient = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379'
+})
+redisClient.connect().catch(console.error)
+
+const sessionStore = new RedisStore({
+    client: redisClient,
+    prefix: "ssqueries:"
+})
 
 // CORS configuration - allow only specified origins
 const allowedOrigins = [
@@ -48,7 +41,6 @@ const allowedOrigins = [
 ]
 
 const isDev = process.env.NODE_ENV !== 'production'
-
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin) return callback(null, true)

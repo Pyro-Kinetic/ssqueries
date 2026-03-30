@@ -28,17 +28,16 @@ export async function registerUser(req, res) {
     try {
 
         // DB Connection
-        const connection = await getDBConnection()
+        const pool = getDBConnection()
 
         // SQL query checks if the user is already in the database
-        const selectIDQuery = 'SELECT user_id FROM users WHERE username = ?'
+        const selectIDQuery = 'SELECT user_id FROM users WHERE username = $1'
 
         // SQL query execution
-        const existingUser = await connection.query(selectIDQuery, [userName])
+        const existingUser = await pool.query(selectIDQuery, [userName])
 
-        if (existingUser[0].length > 0) {
-            // console.log('User exists: ', existingUser[0], req.body)
-            await connection.end()
+        if (existingUser.rows.length > 0) {
+            // console.log('User exists: ', existingUser.rows, req.body)
             res.status(400).json({error: 'Username already in use'})
             return
         }
@@ -47,13 +46,12 @@ export async function registerUser(req, res) {
         const hashed = await bcrypt.hash(password, 10)
 
         // SQL query inserts the new user into the database
-        const insertUserQuery = 'INSERT INTO users (username, password) VALUES (?, ?)'
+        const insertUserQuery = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING user_id'
         const insertUserQueryValues = [userName, hashed]
 
         // SQL query execution
-        const result = await connection.query(insertUserQuery, insertUserQueryValues)
-
-        await connection.end()
+        const result = await pool.query(insertUserQuery, insertUserQueryValues)
+        const newUserId = result.rows[0].user_id
 
         // Create session for the new user
         req.session.regenerate((err) => {
@@ -61,7 +59,7 @@ export async function registerUser(req, res) {
                 console.error('Session regenerate error: ', err)
                 return res.status(500).json({error: 'Registration failed. Please try again.'})
             }
-            req.session.userId = result[0].insertId
+            req.session.userId = newUserId
             req.session.username = userName
             req.session.save((saveErr) => {
                 if (saveErr) {
@@ -94,15 +92,14 @@ export async function loginUser(req, res) {
     try {
 
         // DB connection and query select statement
-        const connection = await getDBConnection()
-        const sqlQuery = 'SELECT * FROM users WHERE username = ?'
+        const pool = getDBConnection()
+        const sqlQuery = 'SELECT * FROM users WHERE username = $1'
 
-        const result = await connection.query(sqlQuery, [username])
-        const user = result[0][0]
+        const result = await pool.query(sqlQuery, [username])
+        const user = result.rows[0]
 
         // Checks if user is valid
         if (!user) {
-            await connection.end()
             res.status(401).json({error: 'Invalid credentials', isLoggedIn: false})
             return
         }
@@ -110,12 +107,9 @@ export async function loginUser(req, res) {
         // Checks if password is valid
         const isValid = await bcrypt.compare(password, user.password)
         if (!isValid) {
-            await connection.end()
             res.status(401).json({error: 'Invalid credentials', isLoggedIn: false})
             return
         }
-
-        await connection.end()
 
         // Regenerate session for logged in user
         req.session.regenerate((err) => {

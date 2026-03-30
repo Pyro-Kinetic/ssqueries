@@ -8,16 +8,16 @@ A full‑stack Q&A app for all things planetary. Users can register, log in, ask
 - 📝 Post questions and 💬 add answers
 - 🪐 Category browsing by planet
 - ⚡ Fast React + Vite frontend
-- 🗄️ MySQL persistence
+- 🗄️ PostgreSQL persistence
 - 🛡️ CORS configured for production deployments
 
 ## 🧱 Tech Stack
 
 - Frontend: React 19, Vite 7, Axios, CSS Modules
 - Backend: Node.js, Express 5, express-session, bcryptjs, cors
-- Database: MySQL (mysql2)
+- Database: PostgreSQL (pg)
 - Config: dotenv
-- Optional Session Store: express-mysql-session (or Redis via connect-redis)
+- Optional Session Store: redis (via connect-redis)
 
 ## 📁 Project Structure
 
@@ -30,7 +30,7 @@ A full‑stack Q&A app for all things planetary. Users can register, log in, ask
 
 Prereqs:
 - Node.js 18+ (recommended: 20+)
-- MySQL running locally or via a cloud instance
+- PostgreSQL running locally or via a cloud instance
 
 1) Clone and install
 - git clone <your-repo-url>
@@ -42,7 +42,8 @@ Prereqs:
 Backend (backend/ssqueries_be/.env):
 - PORT=8000
 - SECRET_KEY=your-strong-random-secret
-- MYSQL_URL=mysql://user:pass@localhost:3306/your_db
+- DATABASE_URL=postgres://user:pass@localhost:5432/your_db
+- REDIS_URL=redis://localhost:6379
 - NODE_ENV=development
 
 Frontend (frontend/ssqueries_fe/.env):
