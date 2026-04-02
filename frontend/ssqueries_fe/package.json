@@ -1,4 +1,5 @@
 {
+  "homepage": ".",
   "name": "ssqueries",
   "private": true,
   "version": "0.0.0",
