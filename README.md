@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div align="center" style="text-align: center;">
   <img src="frontend/ssqueries_fe/src/assets/astronaut.svg" width="80" height="80" alt="Astronaut Logo" />
   <h1>🌌 Solar System Queries</h1>
   <p>
