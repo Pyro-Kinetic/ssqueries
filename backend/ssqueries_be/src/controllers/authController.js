@@ -69,7 +69,6 @@ export async function registerUser(req, res) {
                 return res.status(201).json({message: 'User registered', registered: true})
             })
         })
-        // console.log('User added: ', result[0].insertId, req.body, 'Session: ', req.session)
 
     } catch (error) {
         console.error('Registration error: ', error.message)

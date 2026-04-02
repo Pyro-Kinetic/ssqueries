@@ -21,18 +21,22 @@ const isProduction = nodeEnv === 'production'
 const sessionStore = redisStore
 
 // CORS configuration - allow only specified origins
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:5173', 'https://pyro-kinetic.github.io']
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://pyro-kinetic.github.io',
+].filter(Boolean)
 const uniqueOrigins = [...new Set(allowedOrigins)]
 
-console.log('Allowed Origins (initial):', uniqueOrigins)
+console.log('Allowed Origins (initial):', uniqueOrigins);
+
+if (isProduction) {
+    app.set('trust proxy', 1)
+
+}
 
 if (!sessionSecret || sessionSecret.length < 64) {
     console.error('Missing or invalid SESSION_SECRET environment variable.')
     process.exit(1)
-}
-
-if (isProduction) {
-    app.set('trust proxy', 1)
 }
 
 app.use(cors({
@@ -46,7 +50,7 @@ app.use(cors({
         const cleanOrigin = normalizeOrigin(origin);
 
         // Compare the cleaned origin with the unique origins
-        const isAllowed = uniqueOrigins.some(o => {
+        const isAllowed = origin === 'null' || uniqueOrigins.some(o => {
             if (!o) return false;
             return normalizeOrigin(o) === cleanOrigin;
         });
@@ -55,7 +59,8 @@ app.use(cors({
             callback(null, true);
         } else {
             console.warn(`CORS blocked for origin: ${origin}`);
-            console.log('Allowed Origins (loaded from Env):', uniqueOrigins);
+            console.log('Allowed Origins (initial):', uniqueOrigins);
+            console.log('Normalized unique origins:', uniqueOrigins.map(normalizeOrigin));
             console.log('Cleaned incoming origin:', cleanOrigin);
             callback(null, false);
         }
@@ -65,10 +70,16 @@ app.use(cors({
 app.use(express.json())
 
 app.use(session({
-    secret: sessionSecret, store: sessionStore, resave: false, saveUninitialized: false, rolling: true, cookie: {
+    secret: sessionSecret,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    proxy: true,
+    cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
         maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
 }))

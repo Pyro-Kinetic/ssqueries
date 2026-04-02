@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename)
 const currentEnv = process.env.NODE_ENV?.trim() || 'development'
 const envFileName = `.env.${currentEnv}`
 // go up two levels to get to root,
-// then look for .env.dev or .evn.prod
+// then look for .env.development.dev or .evn.prod
 const envFilePath = path.resolve(__dirname, `../../${envFileName}`)
 
 const isProduction = currentEnv === 'production'

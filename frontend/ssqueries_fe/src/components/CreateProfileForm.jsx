@@ -52,7 +52,7 @@ export default function CreateProfileForm({
         if (onCreate) return onCreate(u, p)
 
         // Backend expects { userName, password }
-        const res = await axios.post(apiUrl, {userName: u, password: p})
+        const res = await axios.post(apiUrl, {userName: u, password: p}, {withCredentials: true})
         // console.log(res?.data)
         return res?.data
     }

@@ -66,8 +66,8 @@ export default function Dashboard({username = '', onLogout, apiBase = import.met
                 setError('')
 
                 const [qRes, aRes] = await Promise.all([
-                    axios.get(`${apiBase}/api/questions/data`),
-                    axios.get(`${apiBase}/api/answers/data`)
+                    axios.get(`${apiBase}/api/questions/data`, {withCredentials: true}),
+                    axios.get(`${apiBase}/api/answers/data`, {withCredentials: true})
                 ])
 
                 if (!isMounted) return
