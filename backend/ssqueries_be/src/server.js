@@ -24,6 +24,8 @@ const sessionStore = redisStore
 const allowedOrigins = [
     'http://localhost:5173',
     'https://pyro-kinetic.github.io',
+    process.env.CLIENT_ORIGIN,
+    process.env.CLIENT_ORIGIN_2
 ].filter(Boolean)
 const uniqueOrigins = [...new Set(allowedOrigins)]
 
