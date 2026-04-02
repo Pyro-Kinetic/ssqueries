@@ -13,7 +13,8 @@ export async function getQuestions(req, res) {
                                                 questions.created_at,
                                                 questions.planet
                                          FROM users
-                                                  JOIN questions ON users.user_id = questions.user_id`)
+                                                  JOIN questions ON users.user_id = questions.user_id
+                                         ORDER BY questions.created_at DESC`)
         const questions = result.rows
         res.json(questions)
 
@@ -98,6 +99,36 @@ export async function addQuestion(req, res) {
         // console.log('Post Question Error: ', error)
         res.status(500).json({
             error: 'Failed to post question. Please try again.',
+            details: error.message
+        })
+    }
+}
+
+//api/questions/delete/:id
+export async function deleteQuestion(req, res) {
+    try {
+        const {id} = req.params
+        if (!id) {
+            return res.status(400).json({error: 'Question ID is required'})
+        }
+
+        const pool = getDBConnection()
+
+        // First, delete all answers associated with this question
+        await pool.query(`DELETE FROM answers WHERE question_id = $1`, [id])
+
+        // Then, delete the question
+        const result = await pool.query(`DELETE FROM questions WHERE question_id = $1`, [id])
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({error: 'Question not found'})
+        }
+
+        return res.json({message: 'Question and its answers deleted successfully'})
+
+    } catch (error) {
+        res.status(500).json({
+            error: 'Failed to delete question',
             details: error.message
         })
     }

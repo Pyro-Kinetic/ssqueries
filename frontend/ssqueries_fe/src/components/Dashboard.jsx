@@ -118,7 +118,7 @@ export default function Dashboard({username = '', onLogout, apiBase = import.met
         return list.sort((a, b) => {
             const da = a.created_at ? new Date(a.created_at).getTime() : 0
             const db = b.created_at ? new Date(b.created_at).getTime() : 0
-            return da - db
+            return db - da
         })
     }, [questions, activeCategory])
 
@@ -201,6 +201,30 @@ export default function Dashboard({username = '', onLogout, apiBase = import.met
                                             onAnswer={(qid, ans) => {
                                                 setAnswersByQ(prev => ({...prev, [qid]: [...(prev[qid] || []), ans]}))
                                             }}
+                                            onDeleteQuestion={async (qid) => {
+                                                try {
+                                                    await axios.delete(`${apiBase}/api/questions/delete/${qid}`, {withCredentials: true})
+                                                    setQuestions(prev => prev.filter(item => item.question_id !== qid))
+                                                    setAnswersByQ(prev => {
+                                                        const copy = {...prev}
+                                                        delete copy[qid]
+                                                        return copy
+                                                    })
+                                                } catch (err) {
+                                                    alert(err?.response?.data?.error || 'Failed to delete question')
+                                                }
+                                            }}
+                                            onDeleteAnswer={async (aid, qid) => {
+                                                try {
+                                                    await axios.delete(`${apiBase}/api/answers/delete/${aid}`, {withCredentials: true})
+                                                    setAnswersByQ(prev => ({
+                                                        ...prev,
+                                                        [qid]: prev[qid].filter(a => a.answer_id !== aid)
+                                                    }))
+                                                } catch (err) {
+                                                    alert(err?.response?.data?.error || 'Failed to delete answer')
+                                                }
+                                            }}
                                         />
                                     ))}
                                 </ul>
@@ -213,7 +237,7 @@ export default function Dashboard({username = '', onLogout, apiBase = import.met
     )
 }
 
-function QuestionCard({question, answers, username, apiBase, onAnswer}) {
+function QuestionCard({question, answers, username, apiBase, onAnswer, onDeleteQuestion, onDeleteAnswer}) {
     const [open, setOpen] = useState(false)
     const created = question.created_at ? new Date(question.created_at) : null
     return (
@@ -229,17 +253,39 @@ function QuestionCard({question, answers, username, apiBase, onAnswer}) {
                 <button className={styles.answerBtn} onClick={() => setOpen(v => !v)} aria-expanded={open}>
                     {open ? 'Hide Answers' : 'Show Answers'}
                 </button>
+                <button
+                    className={styles.deleteBtn}
+                    onClick={() => {
+                        if (window.confirm('Are you sure you want to delete this question and all its answers?')) {
+                            onDeleteQuestion && onDeleteQuestion(question.question_id)
+                        }
+                    }}
+                >
+                    Delete
+                </button>
             </div>
             {open && (
                 <div className={styles.answers}>
                     {Array.isArray(answers) && answers.length > 0 ? (
                         answers
                             .slice()
-                            .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+                            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                             .map(a => (
                                 <div key={a.answer_id || `${question.question_id}-a-${Math.random()}`}
                                      className={styles.answerItem}>
-                                    <div className={styles.answerText}>{a.answer_content || a.content}</div>
+                                    <div className={styles.answerHeader}>
+                                        <div className={styles.answerText}>{a.answer_content || a.content}</div>
+                                        <button
+                                            className={styles.deleteBtn}
+                                            onClick={() => {
+                                                if (window.confirm('Are you sure you want to delete this answer?')) {
+                                                    onDeleteAnswer && onDeleteAnswer(a.answer_id, question.question_id)
+                                                }
+                                            }}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
                                     <div className={styles.meta}>
                                         {a?.username && <span>by {a.username} • </span>}
                                         <time>{new Date(a.created_at || Date.now()).toLocaleString()}</time>

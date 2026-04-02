@@ -246,6 +246,30 @@
     color: var(--danger);
 }
 
+.deleteBtn {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-left: 8px;
+    transition: background .15s ease, transform .1s;
+}
+
+.deleteBtn:hover {
+    background: rgba(239, 68, 68, 0.12);
+    transform: scale(1.05);
+}
+
+.answerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
 @media (max-width: 900px) {
     .body {
         grid-template-columns: 1fr;

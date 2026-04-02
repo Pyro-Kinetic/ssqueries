@@ -12,7 +12,8 @@ export async function getAnswers(req, res) {
                                                 u.username    as username
                                          FROM questions q
                                                   JOIN answers a ON q.question_id = a.question_id
-                                                  JOIN users u ON u.user_id = a.user_id`)
+                                                  JOIN users u ON u.user_id = a.user_id
+                                         ORDER BY a.created_at DESC`)
         const answers = result.rows
         res.json(answers)
 
@@ -84,5 +85,30 @@ export async function addAnswer(req, res) {
     } catch (error) {
         // console.log('Post Answer Error: ', error)
         res.status(500).json({error: 'Failed to post answer. Please try again.', details: error.message})
+    }
+}
+
+//api/answers/delete/:id
+export async function deleteAnswer(req, res) {
+    try {
+        const {id} = req.params
+        if (!id) {
+            return res.status(400).json({error: 'Answer ID is required'})
+        }
+
+        const pool = getDBConnection()
+        const result = await pool.query(`DELETE FROM answers WHERE answer_id = $1`, [id])
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({error: 'Answer not found'})
+        }
+
+        return res.json({message: 'Answer deleted successfully'})
+
+    } catch (error) {
+        res.status(500).json({
+            error: 'Failed to delete answer',
+            details: error.message
+        })
     }
 }
